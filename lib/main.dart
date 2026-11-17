@@ -43,27 +43,28 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MainScreen(title: 'AeroFee Baggage Estimator'),
+      
+      home: const HomePage(title: 'AeroFee Baggage Estimator'),
     );
   }
 }
 
 //navigation bar (home & about page)
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key, required this.title});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key, required this.title});
   final String title;
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _HomePageState extends State<HomePage> {
   int _currentIndex = 0; //tracks active tab (0 = home, 1 = about). function letak _ sebab nak buat dia private to this file
 
   final List<Widget> _screens = const [
     //list of screens for navigation bar
-    HomePage(),
-    AboutPage(),
+    CalculatorPage(), //index 0: main calculator form
+    AboutPage(), //index 1: about page
   ];
 
   @override
@@ -74,35 +75,58 @@ class _MainScreenState extends State<MainScreen> {
         //untuk icon luggage and title
         leading: const Icon(Icons.luggage),
         title: Text(widget.title),
-      ),
-      body: _screens[_currentIndex], //display screen sekarang based on current index
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        selectedItemColor: AppColors.colorSecondary,
-        onTap: (int index) {
-          //bila user tap on bottom navigation bar, update current index and rebuild UI
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.info), label: 'About'),
+        //actions letak widgets kat top-right corner AppBar (ganti bottomNavigationBar)
+        actions: [
+          PopupMenuButton<int>(
+            //icon 3 titik menegak (three dots) kat penjuru kanan atas
+            icon: const Icon(Icons.more_vert),
+            //bila user tap option dalam 3 dots menu, update current index and rebuild UI
+            //value 0 = Home (CalculatorPage), value 1 = AboutPage
+            onSelected: (int index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            //senarai menu yang keluar bila user tekan icon 3 dots
+            itemBuilder: (BuildContext context) => const [
+              PopupMenuItem<int>(
+                value: 0, //connects to _screens[0]
+                child: Row(
+                  children: [
+                    Icon(Icons.home, color: AppColors.colorOnPrimary),
+                    SizedBox(width: 8), //jarak antara icon dengan text
+                    Text('Home'),
+                  ],
+                ),
+              ),
+              PopupMenuItem<int>(
+                value: 1, //connects to _screens[1]
+                child: Row(
+                  children: [
+                    Icon(Icons.info, color: AppColors.colorOnPrimary),
+                    SizedBox(width: 8), //jarak antara icon dengan text
+                    Text('About'),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
+      body: _screens[_currentIndex], //display screen sekarang based on current index
     );
   }
 }
 
-// 3. HOME PAGE
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+// 3. CALCULATOR PAGE
+class CalculatorPage extends StatefulWidget {
+  const CalculatorPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<CalculatorPage> createState() => _CalculatorPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _CalculatorPageState extends State<CalculatorPage> {
   final TextEditingController weightController = TextEditingController();
   //connects dengan TextField so code can read apa user type
 
